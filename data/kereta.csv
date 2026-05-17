@@ -1,1 +1,71 @@
-kode_kereta,nama_kereta,tipe,kapasitas,status_aktif
+kode_kereta;nama_kereta;tipe;kapasitas;status_aktif
+K001;Argo Bromo Anggrek;Eksekutif;300;Aktif
+K002;Taksaka;Eksekutif;250;Aktif
+K003;Progo;Ekonomi;400;Aktif
+K004;Bengawan;Ekonomi;350;Aktif
+K005;Matarmaja;Ekonomi;420;Aktif
+K006;Lodaya;Bisnis;280;Aktif
+K007;Malabar;Bisnis;320;Aktif
+K008;Gajayana;Eksekutif;260;Aktif
+K009;Jayabaya;Ekonomi;380;Aktif
+K010;Turangga;Eksekutif;270;Aktif
+K011;Argo Wilis;Eksekutif;280;Aktif
+K012;Argo Lawu;Eksekutif;260;Aktif
+K013;Argo Dwipangga;Eksekutif;270;Aktif
+K014;Bima;Eksekutif;250;Aktif
+K015;Sembrani;Eksekutif;260;Aktif
+K016;Mutiara Selatan;Bisnis;300;Aktif
+K017;Logawa;Ekonomi;390;Aktif
+K018;Sri Tanjung;Ekonomi;410;Aktif
+K019;Kahuripan;Ekonomi;400;Aktif
+K020;Serayu;Ekonomi;380;Aktif
+K021;Majapahit;Ekonomi;420;Aktif
+K022;Brantas;Ekonomi;400;Aktif
+K023;Kertajaya;Ekonomi;390;Aktif
+K024;Gumarang;Bisnis;310;Aktif
+K025;Harina;Bisnis;300;Aktif
+K026;Ciremai;Eksekutif;260;Aktif
+K027;Menoreh;Ekonomi;370;Aktif
+K028;Bogowonto;Ekonomi;360;Aktif
+K029;Gajahwong;Ekonomi;370;Aktif
+K030;Jaka Tingkir;Ekonomi;380;Aktif
+K031;Wijayakusuma;Eksekutif;280;Aktif
+K032;Sancaka;Eksekutif;250;Aktif
+K033;Mutiara Timur;Eksekutif;260;Aktif
+K034;Pasundan;Ekonomi;420;Aktif
+K035;Tawang Jaya;Ekonomi;400;Aktif
+K036;Kutojaya Utara;Ekonomi;390;Aktif
+K037;Kutojaya Selatan;Ekonomi;390;Aktif
+K038;Sawunggalih;Eksekutif;270;Aktif
+K039;Fajar Utama Yogya;Eksekutif;260;Aktif
+K040;Senja Utama Solo;Eksekutif;260;Aktif
+K041;Jayakarta;Ekonomi;400;Aktif
+K042;Bangunkarta;Eksekutif;270;Aktif
+K043;Ranggajati;Bisnis;300;Aktif
+K044;Singasari;Ekonomi;380;Aktif
+K045;Airlangga;Ekonomi;420;Aktif
+K046;Dharmawangsa;Ekonomi;400;Aktif
+K047;Ambarawa Ekspres;Ekonomi;350;Aktif
+K048;Joglosemarkerto;Ekonomi;360;Aktif
+K049;Kamandaka;Ekonomi;340;Aktif
+K050;Kaligung;Ekonomi;330;Aktif
+K051;Pandanwangi;Ekonomi;320;Aktif
+K052;Prameks;Ekonomi;300;Aktif
+K053;Bathara Kresna;Ekonomi;250;Aktif
+K054;Siantar Ekspres;Ekonomi;300;Aktif
+K055;Sri Lelawangsa;Ekonomi;280;Aktif
+K056;Putri Deli;Ekonomi;350;Aktif
+K057;Probowangi;Ekonomi;390;Aktif
+K058;Tawang Alun;Ekonomi;370;Aktif
+K059;Blambangan Ekspres;Eksekutif;260;Aktif
+K060;Malioboro Ekspres;Eksekutif;270;Aktif
+K061;Argo Parahyangan;Eksekutif;250;Tidak Aktif
+K062;Lokal Bandung Raya;Ekonomi;500;Aktif
+K063;Lokal Cibatu;Ekonomi;420;Aktif
+K064;Lokal Merak;Ekonomi;450;Aktif
+K065;Lokal Rangkasbitung;Ekonomi;460;Aktif
+K066;Lokal Walahar;Ekonomi;430;Aktif
+K067;Lokal Jatiluhur;Ekonomi;420;Aktif
+K068;Kedung Sepur;Ekonomi;350;Aktif
+K069;Dhoho;Ekonomi;400;Aktif
+K070;Penataran;Ekonomi;400;Aktif

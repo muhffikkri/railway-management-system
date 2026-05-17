@@ -1,1 +1,71 @@
-kode_stasiun,nama_stasiun,kota
+kode_stasiun;nama_stasiun;kota
+S001;Gambir;Jakarta
+S002;Pasar Senen;Jakarta
+S003;Jatinegara;Jakarta
+S004;Bekasi;Bekasi
+S005;Cikarang;Bekasi
+S006;Karawang;Karawang
+S007;Cikampek;Karawang
+S008;Purwakarta;Purwakarta
+S009;Bandung;Bandung
+S010;Kiaracondong;Bandung
+S011;Cimahi;Cimahi
+S012;Padalarang;Bandung Barat
+S013;Cipeundeuy;Garut
+S014;Tasikmalaya;Tasikmalaya
+S015;Banjar;Banjar
+S016;Ciamis;Ciamis
+S017;Cirebon;Cirebon
+S018;Cirebon Prujakan;Cirebon
+S019;Tegal;Tegal
+S020;Pemalang;Pemalang
+S021;Pekalongan;Pekalongan
+S022;Batang;Batang
+S023;Weleri;Kendal
+S024;Semarang Tawang;Semarang
+S025;Semarang Poncol;Semarang
+S026;Ngrombo;Grobogan
+S027;Kradenan;Grobogan
+S028;Cepu;Blora
+S029;Bojonegoro;Bojonegoro
+S030;Lamongan;Lamongan
+S031;Pasar Turi;Surabaya
+S032;Gubeng;Surabaya
+S033;Wonokromo;Surabaya
+S034;Sidoarjo;Sidoarjo
+S035;Bangil;Pasuruan
+S036;Pasuruan;Pasuruan
+S037;Probolinggo;Probolinggo
+S038;Klakah;Lumajang
+S039;Jember;Jember
+S040;Banyuwangi Kota;Banyuwangi
+S041;Ketapang;Banyuwangi
+S042;Malang;Malang
+S043;Malang Kota Lama;Malang
+S044;Kepanjen;Malang
+S045;Wlingi;Blitar
+S046;Blitar;Blitar
+S047;Tulungagung;Tulungagung
+S048;Kediri;Kediri
+S049;Nganjuk;Nganjuk
+S050;Madiun;Madiun
+S051;Magetan;Magetan
+S052;Ngawi;Ngawi
+S053;Sragen;Sragen
+S054;Solo Balapan;Surakarta
+S055;Purwosari;Surakarta
+S056;Klaten;Klaten
+S057;Tugu;Yogyakarta
+S058;Lempuyangan;Yogyakarta
+S059;Wates;Kulon Progo
+S060;Kutoarjo;Purworejo
+S061;Kebumen;Kebumen
+S062;Gombong;Kebumen
+S063;Kroya;Cilacap
+S064;Purwokerto;Banyumas
+S065;Bumiayu;Brebes
+S066;Prupuk;Tegal
+S067;Slawi;Tegal
+S068;Brebes;Brebes
+S069;Losari;Cirebon
+S070;Jatibarang;Indramayu
