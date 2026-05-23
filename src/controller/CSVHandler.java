@@ -57,22 +57,31 @@ public class CSVHandler<T> {
     public static Function<String, Train> trainFromLine() {
         return line -> {
             String[] parts = line.split(";", -1);
-            if (parts.length < 5) return null;
+            if (parts.length < 5){
+                return null;
+            }
+
             String kode = parts[0].trim();
             String nama = parts[1].trim();
             String tipe = parts[2].trim();
             String kapasitasS = parts[3].trim();
             String status = parts[4].trim();
-
             Train t;
+
             if (tipe.equalsIgnoreCase("Eksekutif")) {
                 t = new ExecutiveTrain();
-            } else {
+            } 
+            else {
                 t = new EconomyTrain();
             }
             t.setKodeKereta(kode);
             t.setNamaKereta(nama);
-            try { t.setKapasitas(Integer.parseInt(kapasitasS)); } catch (Exception e) {}
+            try { 
+                t.setKapasitas(Integer.parseInt(kapasitasS));
+            } 
+            catch (Exception e) {
+                t.setKapasitas(0);
+            }
             t.setOperasional(status.equalsIgnoreCase("Aktif"));
             return t;
         };
@@ -100,7 +109,9 @@ public class CSVHandler<T> {
     public static Function<String, Station> stationFromLine() {
         return line -> {
             String[] parts = line.split(";", -1);
-            if (parts.length < 3) return null;
+            if (parts.length < 3){
+                return null;
+            } 
             Station s = new Station();
             s.setKodeStasiun(parts[0].trim());
             s.setNamaStasiun(parts[1].trim());

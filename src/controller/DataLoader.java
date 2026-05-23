@@ -8,31 +8,28 @@ import model.Schedule;
 import model.Station;
 import model.Train;
 
-/**
- * Contoh pemakaian `CSVHandler` untuk memuat dan menghubungkan data dari folder `data/`.
- */
+/*Contoh pemakaian `CSVHandler` untuk memuat dan menghubungkan data dari folder `data/`.*/
 public class DataLoader {
-    /**
-     * Entrypoint contoh: memuat file `kereta.csv`, `stasiun.csv`, `jadwal.csv` dan
-     * menghubungkan referensi kode pada `Schedule` ke objek `Train`/`Station` nyata.
-     */
-    public static void main(String[] args) {
-        String base = "data";
 
+    /* Entrypoint contoh: memuat file `kereta.csv`, `stasiun.csv`, `jadwal.csv` dan
+    menghubungkan referensi kode pada `Schedule` ke objek `Train`/`Station` nyata.*/
+    public static void main(String[] args) {
+
+        //ATRIBUT
+        String base = "data";
         CSVHandler<Train> trainHandler = CSVHandler.forTrains(base + "/kereta.csv");
         CSVHandler<Station> stationHandler = CSVHandler.forStations(base + "/stasiun.csv");
         CSVHandler<Schedule> scheduleHandler = CSVHandler.forSchedules(base + "/jadwal.csv");
-
         List<Train> trains = trainHandler.read();
         List<Station> stations = stationHandler.read();
         List<Schedule> schedules = scheduleHandler.read();
-
         Map<String, Train> trainMap = new HashMap<>();
+        Map<String, Station> stationMap;
+
+        //ALGORITMA
         for (Train t : trains) if (t != null) trainMap.put(t.getKodeKereta(), t);
-
-        Map<String, Station> stationMap = new HashMap<>();
+        stationMap = new HashMap<>();
         for (Station s : stations) if (s != null) stationMap.put(s.getKodeStasiun(), s);
-
         // Hubungkan schedule ke objek sebenarnya bila memungkinkan
         for (Schedule s : schedules) {
             if (s == null) continue;
@@ -49,7 +46,6 @@ public class DataLoader {
                 if (t != null) s.setTujuan(t);
             }
         }
-
         System.out.println("Trains loaded: " + trains.size());
         System.out.println("Stations loaded: " + stations.size());
         System.out.println("Schedules loaded: " + schedules.size());

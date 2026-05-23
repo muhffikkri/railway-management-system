@@ -8,9 +8,14 @@ import model.Schedule;
 //Kelas pengendali untuk manajemen jadwal.
 //Mechanism: Menyediakan operasi pengecekan bentrok dan penambahan jadwal.
 public class ScheduleController {
+
+    //ATRIBUT
+
     //List jadwal yang dikelola oleh controller ini.
     //Bisa berisi objek `Schedule` yang dimuat dari CSV atau sumber lain.
     private List<Schedule> listJadwal;
+
+    //METHOD
 
     //Mechanism: Mengambil daftar jadwal yang tersimpan.
     //@return daftar jadwal dalam bentuk List<Schedule>.
@@ -33,10 +38,8 @@ public class ScheduleController {
         if (baru == null || list == null) {
             return false;
         }
-
         for (Schedule s : list) {
             if (s == null) continue;
-
             if (baru.getKereta() != null && s.getKereta() != null
                     && baru.getKereta().getKodeKereta() != null
                     && baru.getKereta().getKodeKereta().equals(s.getKereta().getKodeKereta())) {
@@ -44,7 +47,6 @@ public class ScheduleController {
                 LocalDateTime bEnd = baru.getTiba();
                 LocalDateTime sStart = s.getBerangkat();
                 LocalDateTime sEnd = s.getTiba();
-
                 if (bStart != null && bEnd != null && sStart != null && sEnd != null) {
                     if (bStart.isBefore(sEnd) && bEnd.isAfter(sStart)) {
                         return true;
@@ -52,7 +54,6 @@ public class ScheduleController {
                 }
             }
         }
-
         return false;
     }
 
@@ -65,5 +66,4 @@ public class ScheduleController {
         }
         this.listJadwal.add(s);
     }
-
 }

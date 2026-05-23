@@ -7,6 +7,9 @@ import model.Ticket;
 /*Kelas pengendali untuk proses pemesanan tiket.
 Mechanism: Menyediakan operasi untuk membuat tiket baru.*/
 public class BookingController {
+
+    //METHOD
+
     /*Mechanism: Memproses pembuatan tiket baru berdasarkan penumpang dan jadwal.
     @param p data penumpang dalam bentuk Passenger.
     @param s data jadwal dalam bentuk Schedule.
