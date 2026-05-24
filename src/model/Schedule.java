@@ -18,6 +18,9 @@ public class Schedule implements Printable {
     private LocalDateTime berangkat;
     private LocalDateTime tiba;
     private int sisaKursi;
+    // Atribut untuk keperluan audit 
+    private String lastModifiedBy; 
+    private LocalDateTime lastModifiedAt;
 
     /**
      * Mechanism: Constructor untuk menginisialisasi objek Schedule baru di memori 
@@ -84,17 +87,26 @@ public class Schedule implements Printable {
     public void setSisaKursi(int sisaKursi) { this.sisaKursi = sisaKursi; }
 
     /**
+     * Mechanism : Menyimpan informasi audit terakhir yang memodifikasi jadwal ini, termasuk ID staf dan timestamp.
+     * @param staffID ID staf yang melakukan modifikasi dalam bentuk String.
+     */
+    public void setAuditInfo(String staffID) {
+        this.lastModifiedBy = staffID;
+        this.lastModifiedAt = LocalDateTime.now();
+    }
+    /**
      * Mechanism: Mengimplementasikan kontrak metode dari interface Printable.
      */
     @Override
     public void printDetail() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        System.out.println("=== DETAIL JADWAL [" + idJadwal + "] ===");
-        System.out.println("Kereta     : " + (kereta != null ? kereta.getKodeKereta() : "-"));
-        System.out.println("Rute       : " + (asal != null ? asal.getKodeStasiun() : "-") + " -> " + (tujuan != null ? tujuan.getKodeStasiun() : "-"));
-        System.out.println("Berangkat  : " + (berangkat != null ? berangkat.format(formatter) : "-"));
-        System.out.println("Waktu Tiba : " + (tiba != null ? tiba.format(formatter) : "-"));
-        System.out.println("Sisa Kursi : " + sisaKursi);
-        System.out.println("=================================");
+        System.out.println("=== MANAJEMEN JADWAL [" + idJadwal + "] ===");
+        System.out.println("Oleh Staff ID : " + (lastModifiedBy != null ? lastModifiedBy : "N/A"));
+        System.out.println("Waktu Audit   : " + (lastModifiedAt != null ? lastModifiedAt.format(formatter) : "-"));
+        System.out.println("Kereta        : " + (kereta != null ? kereta.getKodeKereta() : "-"));
+        System.out.println("Rute          : " + (asal != null ? asal.getKodeStasiun() : "-") + " -> " + (tujuan != null ? tujuan.getKodeStasiun() : "-"));
+        System.out.println("Berangkat     : " + (berangkat != null ? berangkat.format(formatter) : "-"));
+        System.out.println("Tiba          : " + (tiba != null ? tiba.format(formatter) : "-"));
+        System.out.println("==========================================");
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import model.Schedule;
+import model.Staff; 
 import util.ScheduleConflictException;
 
 /**
@@ -61,7 +62,7 @@ public class ScheduleController {
                     // Rumus Overlap: Jadwal Baru mulai sebelum Jadwal Lama selesai 
                     // DAN Jadwal Baru selesai setelah Jadwal Lama mulai.
                     if (bStart.isBefore(sEnd) && bEnd.isAfter(sStart)) {
-                        return true; 
+                        return true; // Terjadi bentrok waktu operasional armada
                     }
                 }
             }
@@ -71,9 +72,11 @@ public class ScheduleController {
 
     /**
      * MENAMBAHKAN JADWAL BARU (Dengan Pelemparan Exception)
-     * * @throws ScheduleConflictException jika validasi aturan bisnis dilanggar.
+     * @param s Objek jadwal yang ditambahkan.
+     * @param staff Staf yang melakukan input (untuk audit trail).
+     * @throws ScheduleConflictException jika validasi aturan bisnis dilanggar.
      */
-    public void addSchedule(Schedule s) throws ScheduleConflictException {
+    public void addSchedule(Schedule s, Staff staff) throws ScheduleConflictException {
         if (s == null) {
             throw new ScheduleConflictException("Data jadwal tidak boleh kosong (null).");
         }
@@ -88,6 +91,11 @@ public class ScheduleController {
             throw new ScheduleConflictException("Konflik Jadwal: Kereta " + s.getKereta().getKodeKereta() + " sudah terikat pada jadwal lain di rentang waktu tersebut.");
         }
 
+        // --- Mekanisme Audit (Manajemen POV) ---
+        if (staff != null) {
+            s.setAuditInfo(staff.getStaffID()); // Menggunakan ID dari kelas Staff milikmu
+        }
+
         // Jika semua validasi aman, masukkan ke koleksi memori
         this.listJadwal.add(s);
     }
@@ -96,12 +104,12 @@ public class ScheduleController {
      * MANAGEMEN EXCEPTION & PERSISTENSI (Sisi Pemrosesan Aplikasi)
      * Menjalankan fungsi simpan dengan perlindungan blok Try-Catch terpusat.
      */
-    public void prosesInputJadwal(Schedule jadwalBaru) {
+    public void prosesInputJadwal(Schedule jadwalBaru, Staff staff) {
         try {
             // Jalankan penambahan (Bisa memicu ScheduleConflictException)
-            this.addSchedule(jadwalBaru);
+            this.addSchedule(jadwalBaru, staff);
             
-            System.out.println("[SUKSES] Jadwal baru berhasil divalidasi dan ditambahkan ke sistem.");
+            System.out.println("[SUKSES] Jadwal baru berhasil divalidasi dan ditambahkan ke sistem oleh Staff: " + staff.getStaffID());
             
         } catch (ScheduleConflictException e) {
             // Menangkap custom exception yang kita rancang khusus
