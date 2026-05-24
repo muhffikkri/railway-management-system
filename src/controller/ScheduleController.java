@@ -4,52 +4,65 @@ import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import model.Schedule;
+import model.Staff; 
+import util.ScheduleConflictException;
 
-//Kelas pengendali untuk manajemen jadwal.
-//Mechanism: Menyediakan operasi pengecekan bentrok dan penambahan jadwal.
+/**
+ * Controller untuk mengelola operasional Jadwal (Schedule).
+ * Menerapkan Logika Bisnis, Koleksi, dan Penanganan Exception.
+ */
 public class ScheduleController {
-
-    //ATRIBUT
-
-    //List jadwal yang dikelola oleh controller ini.
-    //Bisa berisi objek `Schedule` yang dimuat dari CSV atau sumber lain.
+    // Koleksi bertipe Generik List untuk menyimpan data di memori (Koleksi)
     private List<Schedule> listJadwal;
 
-    //METHOD
+    public ScheduleController() {
+        this.listJadwal = new ArrayList<>();
+    }
 
-    //Mechanism: Mengambil daftar jadwal yang tersimpan.
-    //@return daftar jadwal dalam bentuk List<Schedule>.
     public List<Schedule> getListJadwal() {
         return listJadwal;
     }
 
-    /*Mechanism: Mengatur daftar jadwal yang tersimpan.
-    @param listJadwal daftar jadwal dalam bentuk List<Schedule>.
-    @return tidak ada.*/
-    public void setListJadwal(List<Schedule> listJadwal) {
-        this.listJadwal = listJadwal;
+    /**
+     * FUNGSI UTAMA "GET SCHEDULE"
+     * Mechanism: Mencari objek Schedule berdasarkan ID Jadwal.
+     * Sangat berguna untuk integrasi dengan modul pemesanan tiket Anggota 4.
+     * * @param idJadwal ID yang dicari dalam bentuk String.
+     * @return Objek Schedule jika ditemukan, null jika tidak ada.
+     */
+    public Schedule getScheduleById(String idJadwal) {
+        if (idJadwal == null || listJadwal == null) return null;
+        
+        for (Schedule s : listJadwal) {
+            if (s != null && s.getIdJadwal().equalsIgnoreCase(idJadwal)) {
+                return s; // Mengembalikan objek jadwal utuh
+            }
+        }
+        return null;
     }
 
-    /*Mechanism: Mengecek apakah jadwal baru bentrok dengan daftar jadwal yang ada.
-    @param baru jadwal baru dalam bentuk Schedule.
-    @param list daftar jadwal yang dibandingkan dalam bentuk List<Schedule>.
-    @return status bentrok dalam bentuk boolean.*/
+    /**
+     * LOGIKA CONFLICT CHECK (Pengecekan Jadwal Tumpang Tindih)
+     * * @return true jika waktu bentrok, false jika aman.
+     */
     public boolean cekBentrok(Schedule baru, List<Schedule> list) {
-        if (baru == null || list == null) {
-            return false;
-        }
+        if (baru == null || list == null || baru.getKereta() == null) return false;
+
         for (Schedule s : list) {
-            if (s == null) continue;
-            if (baru.getKereta() != null && s.getKereta() != null
-                    && baru.getKereta().getKodeKereta() != null
-                    && baru.getKereta().getKodeKereta().equals(s.getKereta().getKodeKereta())) {
+            if (s == null || s.getKereta() == null) continue;
+
+            // Pengecekan hanya berlaku jika kereta yang digunakan sama
+            if (baru.getKereta().getKodeKereta().equals(s.getKereta().getKodeKereta())) {
                 LocalDateTime bStart = baru.getBerangkat();
                 LocalDateTime bEnd = baru.getTiba();
                 LocalDateTime sStart = s.getBerangkat();
                 LocalDateTime sEnd = s.getTiba();
+
                 if (bStart != null && bEnd != null && sStart != null && sEnd != null) {
+                    // Rumus Overlap: Jadwal Baru mulai sebelum Jadwal Lama selesai 
+                    // DAN Jadwal Baru selesai setelah Jadwal Lama mulai.
                     if (bStart.isBefore(sEnd) && bEnd.isAfter(sStart)) {
-                        return true;
+                        return true; // Terjadi bentrok waktu operasional armada
                     }
                 }
             }
@@ -57,13 +70,53 @@ public class ScheduleController {
         return false;
     }
 
-    /*Mechanism: Menambahkan jadwal ke daftar jadwal.
-    @param s jadwal yang akan ditambahkan dalam bentuk Schedule.
-    @return tidak ada.*/
-    public void addSchedule(Schedule s) {
-        if (this.listJadwal == null) {
-            this.listJadwal = new ArrayList<>();
+    /**
+     * MENAMBAHKAN JADWAL BARU (Dengan Pelemparan Exception)
+     * @param s Objek jadwal yang ditambahkan.
+     * @param staff Staf yang melakukan input (untuk audit trail).
+     * @throws ScheduleConflictException jika validasi aturan bisnis dilanggar.
+     */
+    public void addSchedule(Schedule s, Staff staff) throws ScheduleConflictException {
+        if (s == null) {
+            throw new ScheduleConflictException("Data jadwal tidak boleh kosong (null).");
         }
+
+        // Aturan Bisnis 1: Validasi logika waktu mendasar
+        if (s.getBerangkat() == null || s.getTiba() == null || !s.getTiba().isAfter(s.getBerangkat())) {
+            throw new ScheduleConflictException("Validasi Gagal: Waktu tiba harus diatur setelah waktu keberangkatan.");
+        }
+
+        // Aturan Bisnis 2: Validasi bentrok armada via metode cekBentrok
+        if (cekBentrok(s, this.listJadwal)) {
+            throw new ScheduleConflictException("Konflik Jadwal: Kereta " + s.getKereta().getKodeKereta() + " sudah terikat pada jadwal lain di rentang waktu tersebut.");
+        }
+
+        // --- Mekanisme Audit (Manajemen POV) ---
+        if (staff != null) {
+            s.setAuditInfo(staff.getStaffID()); // Menggunakan ID dari kelas Staff milikmu
+        }
+
+        // Jika semua validasi aman, masukkan ke koleksi memori
         this.listJadwal.add(s);
+    }
+
+    /**
+     * MANAGEMEN EXCEPTION & PERSISTENSI (Sisi Pemrosesan Aplikasi)
+     * Menjalankan fungsi simpan dengan perlindungan blok Try-Catch terpusat.
+     */
+    public void prosesInputJadwal(Schedule jadwalBaru, Staff staff) {
+        try {
+            this.addSchedule(jadwalBaru, staff);
+
+            CSVHandler<Schedule> handler = CSVHandler.forSchedules("data/jadwal.csv");
+            handler.write(this.listJadwal); 
+            
+            System.out.println("[SUKSES] Jadwal berhasil divalidasi dan disimpan.");
+            
+        } catch (ScheduleConflictException e) {
+            System.err.println("[OPERASI DITOLAK] " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("[ERROR SISTEM] " + e.getMessage());
+        }
     }
 }

@@ -8,20 +8,21 @@ import model.Ticket;
 Mechanism: Menyediakan operasi untuk membuat tiket baru.*/
 public class BookingController {
 
-    //METHOD
-
     /*Mechanism: Memproses pembuatan tiket baru berdasarkan penumpang dan jadwal.
     @param p data penumpang dalam bentuk Passenger.
     @param s data jadwal dalam bentuk Schedule.
     @param nomorKursi nomor kursi dalam bentuk int.
+    @throws IllegalArgumentException jika tiket gagal dibuat.
     @return objek tiket yang terbentuk dalam bentuk Ticket.*/
-    public Ticket prosesTiketBaru(Passenger p, Schedule s, int nomorKursi) {
+    public Ticket prosesTiketBaru(Passenger p, Schedule s, int nomorKursi) throws IllegalArgumentException {
+        // Menggunakan Exception agar pesan error lebih jelas
         if (p == null || s == null) {
-            return null;
+            throw new IllegalArgumentException("Gagal: Data penumpang atau jadwal tidak boleh kosong!");
         }
 
+        // Lempar exception jika kursi habis
         if (s.getSisaKursi() <= 0) {
-            return null;
+            throw new IllegalArgumentException("Gagal: Maaf, kursi untuk jadwal ini sudah habis terjual!");
         }
 
         Ticket t = new Ticket();
