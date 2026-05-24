@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.time.format.DateTimeFormatter;
 import model.Schedule;
 import model.Ticket;
 
@@ -60,10 +59,17 @@ public class ManifestGenerator {
         }
 
         sb.append("-----------------------------------------\n");
-        sb.append("Total Penumpang: ").append(listTiket.size()).append("\n");
+        int totalPenumpang = 0;
+        for (Ticket ticket : listTiket) {
+            if (ticket != null) {
+                totalPenumpang++;
+            }
+        }
+        sb.append("Total Penumpang: ").append(totalPenumpang).append("\n");
         sb.append("=========================================\n");
 
-        String fileName = "manifest_" + s.getIdJadwal() + ".txt";
+        String idManifest = s.getIdJadwal() != null ? s.getIdJadwal() : "UNKNOWN";
+        String fileName = "manifest_" + idManifest + ".txt";
         try {
             Path outputDir = Paths.get("output");
             Files.createDirectories(outputDir);

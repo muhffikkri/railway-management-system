@@ -20,12 +20,13 @@ import model.Schedule;
 import model.Station;
 import model.Train;
 
-/*Generic CSV handler yang menyediakan operasi I/O pada file CSV bersama
-mapper untuk mengonversi antar baris teks dan objek domain `T`.
-<p>
-Responsibility: handling file read/write/append; conversion logic disediakan
-melalui fungsi mapper yang bisa di-inject atau menggunakan factory helpers.
-@param <T> tipe record yang dibaca/ditulis.*/
+/**
+ * Kelas pengendali data generik untuk manajemen berkas flat-file CSV.
+ * * Mechanism: Menyediakan abstraksi utilitas baca dan tulis file yang independen 
+ * terhadap model data tertentu dengan memanfaatkan Java Generics. Kelas ini juga 
+ * mendefinisikan standar format waktu global untuk sinkronisasi teks.
+ * * @param <T> Tipe parameter objek model yang dikelola oleh handler.
+ */
 public class CSVHandler<T> {
 
     //Path ke file CSV yang akan dibaca/ditulis.
@@ -37,6 +38,12 @@ public class CSVHandler<T> {
     //Mapper untuk mengonversi objek `T` menjadi baris CSV. 
     private Function<T, String> toLine;
 
+    //Baris header CSV yang akan ditulis kembali saat file disimpan.
+    private String headerLine;
+
+    //Menandai apakah baris data pertama pada file harus dilewati sebagai header.
+    private boolean skipHeader;
+
     //Konstanta untuk pemisah kolom CSV dan format tanggal/waktu yang digunakan dalam file jadwal.
     public static final String SEP = ";";
     public static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -46,9 +53,15 @@ public class CSVHandler<T> {
 
     //Constructor lengkap untuk menginisialisasi semua field sekaligus.
     public CSVHandler(String filePath, Function<String, T> fromLine, Function<T, String> toLine) {
+        this(filePath, fromLine, toLine, false, null);
+    }
+
+    public CSVHandler(String filePath, Function<String, T> fromLine, Function<T, String> toLine, boolean skipHeader, String headerLine) {
         this.filePath = filePath;
         this.fromLine = fromLine;
         this.toLine = toLine;
+        this.skipHeader = skipHeader;
+        this.headerLine = headerLine;
     }
 
     
@@ -188,19 +201,19 @@ public class CSVHandler<T> {
 
     //Factory helper untuk membuat `CSVHandler` yang sudah dikonfigurasi untuk file `kereta.csv`, `stasiun.csv`, atau `jadwal.csv` dengan mapper yang sesuai.
     public static CSVHandler<Train> forTrains(String filePath) {
-        return new CSVHandler<>(filePath, trainFromLine(), trainToLine());
+        return new CSVHandler<>(filePath, trainFromLine(), trainToLine(), true, "kode_kereta;nama_kereta;tipe;kapasitas;status_aktif");
     }
 
     //Factory helper untuk membuat `CSVHandler` yang sudah dikonfigurasi untuk file `stasiun.csv` dengan mapper yang sesuai.
     public static CSVHandler<Station> forStations(String filePath) {
         //Factory: CSVHandler pra-konfigurasi untuk file stasiun. */
-        return new CSVHandler<>(filePath, stationFromLine(), stationToLine());
+        return new CSVHandler<>(filePath, stationFromLine(), stationToLine(), true, "kode_stasiun;nama_stasiun;kota");
     }
 
     //Factory helper untuk membuat `CSVHandler` yang sudah dikonfigurasi untuk file `jadwal.csv` dengan mapper yang sesuai.
     public static CSVHandler<Schedule> forSchedules(String filePath) {
         //Factory: CSVHandler pra-konfigurasi untuk file jadwal. */
-        return new CSVHandler<>(filePath, scheduleFromLineRaw(), scheduleToLine());
+        return new CSVHandler<>(filePath, scheduleFromLineRaw(), scheduleToLine(), true, "id_jadwal;kode_kereta;kode_asal;kode_tujuan;waktu_berangkat;waktu_tiba;sisa_kursi");
     }
 
     //Getter dan setter untuk field `filePath`, `fromLine`, dan `toLine`.
@@ -222,6 +235,14 @@ public class CSVHandler<T> {
         this.toLine = toLine;
     }
 
+    public void setHeaderLine(String headerLine) {
+        this.headerLine = headerLine;
+    }
+
+    public void setSkipHeader(boolean skipHeader) {
+        this.skipHeader = skipHeader;
+    }
+
     //Membaca semua baris dari CSV dan mengonversinya ke objek T menggunakan mapper.
     //Jika file tidak ada, mengembalikan list kosong.
     public List<T> read() {
@@ -234,11 +255,13 @@ public class CSVHandler<T> {
             return Collections.emptyList();
         }
 
-        try {
-            return Files.lines(p, StandardCharsets.UTF_8)
+        try (var lines = Files.lines(p, StandardCharsets.UTF_8)) {
+            return lines
                     .map(String::trim)
                     .filter(l -> !l.isEmpty())
+                    .skip(skipHeader ? 1 : 0)
                     .map(fromLine)
+                    .filter(record -> record != null)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             return new ArrayList<>();
@@ -253,9 +276,17 @@ public class CSVHandler<T> {
 
         Path p = Paths.get(filePath);
         try {
-            Files.createDirectories(p.getParent());
-            List<String> lines = data == null ? Collections.emptyList()
-                    : data.stream().map(toLine).collect(Collectors.toList());
+            if (p.getParent() != null) {
+                Files.createDirectories(p.getParent());
+            }
+
+            List<String> lines = new ArrayList<>();
+            if (headerLine != null && !headerLine.isBlank()) {
+                lines.add(headerLine);
+            }
+            if (data != null) {
+                lines.addAll(data.stream().map(toLine).collect(Collectors.toList()));
+            }
             Files.write(p, lines, StandardCharsets.UTF_8);
         } catch (IOException e) {
             // swallow for now — callers can check file presence if needed
@@ -271,7 +302,9 @@ public class CSVHandler<T> {
         Path p = Paths.get(filePath);
         String line = toLine.apply(record) + System.lineSeparator();
         try {
-            Files.createDirectories(p.getParent());
+            if (p.getParent() != null) {
+                Files.createDirectories(p.getParent());
+            }
             Files.write(p, line.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             // swallow

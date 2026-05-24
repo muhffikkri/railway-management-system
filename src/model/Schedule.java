@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import controller.CSVHandler;
 
 /**
  * Kelas Model untuk merepresentasikan data Jadwal Perjalanan Kereta Api.
@@ -98,19 +99,23 @@ public class Schedule implements Printable {
         this.lastModifiedBy = staffID;
         this.lastModifiedAt = LocalDateTime.now();
     }
+    
     /**
-     * Mechanism: Mengimplementasikan kontrak metode dari interface Printable.
+     * Mechanism: Meng-override metode dari interface Printable untuk menghasilkan ringkasan jadwal formal.
+     * * @return String berupa visualisasi data manifes operasional jadwal.
      */
     @Override
-    public void printDetail() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        System.out.println("=== MANAJEMEN JADWAL [" + idJadwal + "] ===");
-        System.out.println("Oleh Staff ID : " + (lastModifiedBy != null ? lastModifiedBy : "N/A"));
-        System.out.println("Waktu Audit   : " + (lastModifiedAt != null ? lastModifiedAt.format(formatter) : "-"));
-        System.out.println("Kereta        : " + (kereta != null ? kereta.getKodeKereta() : "-"));
-        System.out.println("Rute          : " + (asal != null ? asal.getKodeStasiun() : "-") + " -> " + (tujuan != null ? tujuan.getKodeStasiun() : "-"));
-        System.out.println("Berangkat     : " + (berangkat != null ? berangkat.format(formatter) : "-"));
-        System.out.println("Tiba          : " + (tiba != null ? tiba.format(formatter) : "-"));
-        System.out.println("==========================================");
+    public String printDetail() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== DETIL JADWAL OPERASIONAL [").append(idJadwal).append("] ===\n");
+        sb.append("Oleh Staff ID : ").append(lastModifiedBy != null ? lastModifiedBy : "SYSTEM/LOADER").append("\n");
+        sb.append("Waktu Audit   : ").append(lastModifiedAt != null ? lastModifiedAt.format(CSVHandler.DTF) : "-").append("\n");
+        sb.append("Kereta        : ").append(kereta != null ? kereta.getNamaKereta() + " [" + kereta.getKodeKereta() + "]" : "-").append("\n");
+        sb.append("Rute Perjalanan: ").append(asal != null ? asal.getNamaStasiun() : "-").append(" -> ").append(tujuan != null ? tujuan.getNamaStasiun() : "-").append("\n");
+        sb.append("Waktu Berangkat: ").append(berangkat != null ? berangkat.format(CSVHandler.DTF) : "-").append("\n");
+        sb.append("Waktu Tiba     : ").append(tiba != null ? tiba.format(CSVHandler.DTF) : "-").append("\n");
+        sb.append("Ketersediaan   : ").append(sisaKursi).append(" Kursi Tersisa\n");
+        sb.append("==========================================");
+        return sb.toString();
     }
 }

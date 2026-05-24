@@ -1,9 +1,9 @@
 package model;
 
 /**
- * Kelas abstrak untuk merepresentasikan informasi umum orang di sistem ERMS.
- *
- * Mechanism: Menyediakan atribut dasar dan kontrak method untuk menampilkan informasi.
+ * Kelas abstrak untuk merepresentasikan entitas manusia umum dalam sistem ERMS.
+ * * Mechanism: Menyediakan landasan atribut dasar berupa data personal (nama, NIK, telepon)
+ * dan menetapkan kontrak bagi kelas turunan untuk menampilkan detail informasi diri.
  */
 public abstract class Person {
     private String nama;

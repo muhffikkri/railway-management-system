@@ -151,7 +151,7 @@ public class Ticket implements Printable {
         sb.append("Kereta       : ").append(s != null && s.getKereta() != null ? s.getKereta().getNamaKereta() : "-").append("\n");
         sb.append("Rute         : ")
                 .append(s != null && s.getAsal() != null ? s.getAsal().getNamaStasiun() : "-")
-                .append(" → ")
+            .append(" -> ")
                 .append(s != null && s.getTujuan() != null ? s.getTujuan().getNamaStasiun() : "-").append("\n");
         sb.append("Berangkat    : ").append(s != null && s.getBerangkat() != null ? s.getBerangkat().format(CSVHandler.DTF) : "-").append("\n");
         sb.append("Tiba         : ").append(s != null && s.getTiba() != null ? s.getTiba().format(CSVHandler.DTF) : "-").append("\n");
