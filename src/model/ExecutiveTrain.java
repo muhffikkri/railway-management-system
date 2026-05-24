@@ -14,6 +14,8 @@ public class ExecutiveTrain extends Train {
      */
     @Override
     public double hitungHarga(double jarak) {
-        return 0.0;
+        double tarifPerKm = 4000.0;
+        double biayaLayanan = 50000.0; // Biaya layanan tambahan untuk kereta eksekutif
+        return (jarak * tarifPerKm) + biayaLayanan;
     }
 }

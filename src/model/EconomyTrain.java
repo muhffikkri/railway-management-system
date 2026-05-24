@@ -14,6 +14,7 @@ public class EconomyTrain extends Train {
      */
     @Override
     public double hitungHarga(double jarak) {
-        return 0.0;
+        double tarifPerKm = 1500.0; 
+        return jarak * tarifPerKm;
     }
 }
