@@ -11,6 +11,23 @@ public abstract class Train {
     private int kapasitas;
     private boolean isOperasional;
 
+    // Default Constructor
+    protected Train() {
+        this.kodeKereta = "";
+        this.namaKereta = "";
+        this.kapasitas = 0;
+        this.isOperasional = false;
+    }
+
+    // Parameterized Constructor
+    protected Train(String kodeKereta, String namaKereta, int kapasitas, boolean isOperasional) {
+        assert kapasitas > 0 : "Kapasitas kereta tidak boleh 0 atau negatif";
+        this.kodeKereta = kodeKereta;
+        this.namaKereta = namaKereta;
+        this.kapasitas = kapasitas;
+        this.isOperasional = isOperasional;
+    }
+
     /**
      * Mechanism: Mengambil kode kereta.
      *
@@ -65,6 +82,7 @@ public abstract class Train {
      * @return tidak ada.
      */
     public void setKapasitas(int kapasitas) {
+        assert kapasitas > 0 : "Kapasitas kereta tidak boleh 0 atau negatif";
         this.kapasitas = kapasitas;
     }
 
