@@ -1,10 +1,15 @@
 package model;
 
 /**
- * Interface Kontrak untuk objek yang detailnya bisa dicetak ke layar.
- * * Mechanism: Menerapkan prinsip Abstraksi dan Modularisasi PBO Lanjut.
+ * Interface untuk objek yang dapat mencetak detail informasi.
+ *
+ * Mechanism: Menyediakan kontrak metode printDetail() untuk konsistensi pencetakan data.
  */
 public interface Printable {
-    // Metode implisit public dan abstract
-    void printDetail();
+    /**
+     * Mechanism: Mencetak detail informasi objek.
+     *
+     * @return hasil detail informasi dalam bentuk String.
+     */
+    String printDetail();
 }

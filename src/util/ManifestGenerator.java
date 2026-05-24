@@ -1,5 +1,10 @@
 package util;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
 import model.Schedule;
@@ -8,9 +13,12 @@ import model.Ticket;
 /**
  * Kelas utilitas untuk menghasilkan manifest perjalanan.
  *
- * Mechanism: Menyusun data tiket menjadi teks manifest.
+ * Mechanism: Menyusun data tiket menjadi teks manifest dan menyimpannya ke file .txt.
  */
 public class ManifestGenerator {
+
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     /**
      * Mechanism: Menghasilkan manifest berdasarkan jadwal dan daftar tiket.
      * Menggunakan StringBuilder untuk efisiensi memori saat menyusun teks.
@@ -20,54 +28,50 @@ public class ManifestGenerator {
      * @return hasil manifest dalam bentuk String.
      */
     public String generate(Schedule s, List<Ticket> listTiket) {
-        // Validasi input agar tidak terjadi NullPointerException
         if (s == null || listTiket == null) {
-            return "ERROR: Data jadwal atau daftar tiket tidak valid.";
+            return null;
         }
 
-        StringBuilder manifest = new StringBuilder();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        // --- Menyusun Header Manifes ---
-        manifest.append("=================================================\n");
-        manifest.append("           MANIFES PERJALANAN KERETA API         \n");
-        manifest.append("=================================================\n");
-        manifest.append("ID Jadwal      : ").append(s.getIdJadwal()).append("\n");
-        manifest.append("Kereta         : ").append(s.getKereta() != null ? s.getKereta().getKodeKereta() : "-").append("\n");
-        manifest.append("Rute           : ").append(s.getAsal() != null ? s.getAsal().getKodeStasiun() : "-")
+        StringBuilder sb = new StringBuilder();
+        sb.append("=========================================\n");
+        sb.append("          MANIFES PENUMPANG\n");
+        sb.append("=========================================\n");
+        sb.append("Jadwal       : ").append(s.getIdJadwal() != null ? s.getIdJadwal() : "-").append("\n");
+        sb.append("Kereta       : ").append(s.getKereta() != null ? s.getKereta().getNamaKereta() : "-").append("\n");
+        sb.append("Rute         : ")
+                .append(s.getAsal() != null ? s.getAsal().getNamaStasiun() : "-")
                 .append(" -> ")
-                .append(s.getTujuan() != null ? s.getTujuan().getKodeStasiun() : "-").append("\n");
-        manifest.append("Waktu Berangkat: ").append(s.getBerangkat() != null ? s.getBerangkat().format(formatter) : "-").append("\n");
-        manifest.append("=================================================\n");
-        
-        // --- Menyusun Daftar Penumpang ---
-        manifest.append("DAFTAR PENUMPANG:\n");
-        manifest.append("-------------------------------------------------\n");
-        manifest.append(String.format("%-7s | %-16s | %-20s\n", "KURSI", "NIK", "NAMA PENUMPANG"));
-        manifest.append("-------------------------------------------------\n");
+                .append(s.getTujuan() != null ? s.getTujuan().getNamaStasiun() : "-").append("\n");
+        sb.append("Berangkat    : ").append(s.getBerangkat() != null ? s.getBerangkat().format(DTF) : "-").append("\n");
+        sb.append("Tiba         : ").append(s.getTiba() != null ? s.getTiba().format(DTF) : "-").append("\n");
+        sb.append("-----------------------------------------\n");
+        sb.append(String.format("%-4s %-15s %-18s %-20s %-6s%n", "No", "No.Tiket", "NIK", "Nama", "Kursi"));
+        sb.append("-----------------------------------------\n");
 
-        int totalPenumpang = 0;
-
-        // Menggunakan getS() untuk mendapatkan jadwal dari tiket, sesuai
-        for (Ticket tiket : listTiket) {
-            if (tiket != null && tiket.getS() != null && 
-                tiket.getS().getIdJadwal().equals(s.getIdJadwal())) {
-                
-                String kursi = tiket.getNomorKursi() != null ? tiket.getNomorKursi() : "-";
-                // Menggunakan getP() untuk mendapatkan penumpang dari tiket
-                String nik = (tiket.getP() != null && tiket.getP().getNik() != null) ? tiket.getP().getNik() : "-";
-                String nama = (tiket.getP() != null && tiket.getP().getNama() != null) ? tiket.getP().getNama() : "-";
-                
-                manifest.append(String.format("%-7s | %-16s | %-20s\n", kursi, nik, nama));
-                totalPenumpang++;
-            }
+        int no = 1;
+        for (Ticket t : listTiket) {
+            if (t == null) continue;
+            sb.append(String.format("%-4d %-15s %-18s %-20s %-6s%n",
+                    no++,
+                    t.getNoTiket() != null ? t.getNoTiket() : "-",
+                    t.getP() != null && t.getP().getNik() != null ? t.getP().getNik() : "-",
+                    t.getP() != null && t.getP().getNama() != null ? t.getP().getNama() : "-",
+                    t.getNomorKursi() != null ? t.getNomorKursi() : "-"));
         }
 
-        // --- Menyusun Footer ---
-        manifest.append("-------------------------------------------------\n");
-        manifest.append("Total Penumpang: ").append(totalPenumpang).append(" orang\n");
-        manifest.append("=================================================\n");
+        sb.append("-----------------------------------------\n");
+        sb.append("Total Penumpang: ").append(listTiket.size()).append("\n");
+        sb.append("=========================================\n");
 
-        return manifest.toString();
+        String fileName = "manifest_" + s.getIdJadwal() + ".txt";
+        try {
+            Path outputDir = Paths.get("output");
+            Files.createDirectories(outputDir);
+            Files.writeString(outputDir.resolve(fileName), sb.toString());
+        } catch (IOException e) {
+            System.err.println("Gagal menyimpan manifest: " + e.getMessage());
+        }
+
+        return sb.toString();
     }
 }
