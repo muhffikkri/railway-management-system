@@ -106,18 +106,17 @@ public class ScheduleController {
      */
     public void prosesInputJadwal(Schedule jadwalBaru, Staff staff) {
         try {
-            // Jalankan penambahan (Bisa memicu ScheduleConflictException)
             this.addSchedule(jadwalBaru, staff);
+
+            CSVHandler<Schedule> handler = CSVHandler.forSchedules("data/jadwal.csv");
+            handler.write(this.listJadwal); 
             
-            System.out.println("[SUKSES] Jadwal baru berhasil divalidasi dan ditambahkan ke sistem oleh Staff: " + staff.getStaffID());
+            System.out.println("[SUKSES] Jadwal berhasil divalidasi dan disimpan.");
             
         } catch (ScheduleConflictException e) {
-            // Menangkap custom exception yang kita rancang khusus
             System.err.println("[OPERASI DITOLAK] " + e.getMessage());
-            
         } catch (Exception e) {
-            // Menangkap error umum atau I/O tak terduga agar program tidak crash fatal
-            System.err.println("[ERROR SISTEM] Gagal menyimpan data karena masalah sistem: " + e.getMessage());
+            System.err.println("[ERROR SISTEM] " + e.getMessage());
         }
     }
 }

@@ -22,6 +22,10 @@ public class Schedule implements Printable {
     private String lastModifiedBy; 
     private LocalDateTime lastModifiedAt;
 
+    public Schedule() {
+        // Constructor default untuk keperluan deserialisasi atau inisialisasi kosong
+    }
+    
     /**
      * Mechanism: Constructor untuk menginisialisasi objek Schedule baru di memori 
      * dengan dependensi objek Train dan Station (prinsip Agregasi/Asosiasi antar kelas).
