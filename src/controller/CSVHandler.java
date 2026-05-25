@@ -18,6 +18,7 @@ import model.EconomyTrain;
 import model.ExecutiveTrain;
 import model.Schedule;
 import model.Station;
+import model.Ticket;
 import model.Train;
 
 /**
@@ -181,15 +182,79 @@ public class CSVHandler<T> {
     //Mapper: mengubah satu baris CSV `jadwal.csv` menjadi objek `Schedule` dengan pemetaan langsung ke objek `Train`/`Station` aktual bila memungkinkan.
     //Format: id_jadwal;kode_kereta;kode_stasiun_asal;kode_stasiun_tujuan;waktu_berangkat;waktu_tiba;sisa_kursi
     public static Function<Schedule, String> scheduleToLine() {
-        return s -> String.join(SEP,
-                safe(s.getIdJadwal()),
-                safe(s.getKereta() == null ? "" : s.getKereta().getKodeKereta()),
-                safe(s.getAsal() == null ? "" : s.getAsal().getKodeStasiun()),
-                safe(s.getTujuan() == null ? "" : s.getTujuan().getKodeStasiun()),
-                s.getBerangkat() == null ? "" : s.getBerangkat().format(DTF),
-                s.getTiba() == null ? "" : s.getTiba().format(DTF),
-                String.valueOf(s.getSisaKursi()));
+        return s -> {
+            String kodeKereta = "";
+            String kodeAsal = "";
+            String kodeTujuan = "";
+            String waktuBerangkat = "";
+            String waktuTiba = "";
+
+            if (s.getKereta() != null) {
+                kodeKereta = s.getKereta().getKodeKereta();
+            }
+
+            if (s.getAsal() != null) {
+                kodeAsal = s.getAsal().getKodeStasiun();
+            }
+
+            if (s.getTujuan() != null) {
+                kodeTujuan = s.getTujuan().getKodeStasiun();
+            }
+
+            if (s.getBerangkat() != null) {
+                waktuBerangkat = s.getBerangkat().format(DTF);
+            }
+
+            if (s.getTiba() != null) {
+                waktuTiba = s.getTiba().format(DTF);
+            }
+
+            return String.join(SEP,
+                    safe(s.getIdJadwal()),
+                    safe(kodeKereta),
+                    safe(kodeAsal),
+                    safe(kodeTujuan),
+                    waktuBerangkat,
+                    waktuTiba,
+                    String.valueOf(s.getSisaKursi()));
+        };
     }
+
+    //mapper: mengubah satu baris CSV `jadwal.csv` menjadi objek `Ticket` dengan pemetaan langsung ke objek `Train`/`Station` aktual bila memungkinkan.
+    //Format: id_jadwal;kode_kereta;kode_stasiun_asal;kode_stasiun_tujuan;waktu_berangkat;waktu_tiba;sisa_kursi
+    // public static Function<String, Ticket> TicketFromLineRaw() {
+    //     return line -> {
+    //         String[] parts = line.split(";", -1);
+    //         if (parts.length < 7) return null;
+    //         Ticket s = new Ticket();
+    //         s.setIdJadwal(parts[0].trim());
+
+    //         Train t;
+    //         String kodeKereta = parts[1].trim();
+    //         if (kodeKereta.isEmpty()) t = null;
+    //         else {
+    //             t = new ExecutiveTrain();
+    //             t.setKodeKereta(kodeKereta);
+    //         }
+    //         s.setKereta(t);
+
+    //         Station asal = new Station();
+    //         asal.setKodeStasiun(parts[2].trim());
+    //         s.setAsal(asal);
+
+    //         Station tujuan = new Station();
+    //         tujuan.setKodeStasiun(parts[3].trim());
+    //         s.setTujuan(tujuan);
+
+    //         try { s.setBerangkat(LocalDateTime.parse(parts[4].trim(), DTF)); } catch (Exception e) {}
+    //         try { s.setTiba(LocalDateTime.parse(parts[5].trim(), DTF)); } catch (Exception e) {}
+
+    //         String sisa = parts[6].trim().replaceAll("[^0-9]", "");
+    //         try { s.setSisaKursi(Integer.parseInt(sisa)); } catch (Exception e) { s.setSisaKursi(0); }
+
+    //         return s;
+    //     };
+    // }
 
     //Mapper: mengubah nilai string menjadi format yang aman untuk ditulis ke CSV.
     //Jika nilai null, kembalikan string kosong; jika tidak, kembalikan nilai asli.
@@ -215,6 +280,11 @@ public class CSVHandler<T> {
         //Factory: CSVHandler pra-konfigurasi untuk file jadwal. */
         return new CSVHandler<>(filePath, scheduleFromLineRaw(), scheduleToLine(), true, "id_jadwal;kode_kereta;kode_asal;kode_tujuan;waktu_berangkat;waktu_tiba;sisa_kursi");
     }
+
+    // public static CSVHandler<Ticket> forTicket(String filePath) {
+    //     // Factory: CSVHandler pra-konfigurasi untuk file tiket.
+    //     return new CSVHandler<>(filePath, )
+    // }
 
     //Getter dan setter untuk field `filePath`, `fromLine`, dan `toLine`.
     public String getFilePath() {
